@@ -184,25 +184,25 @@ export default class Analysis extends Component {
 
     const columns = [
       {
-        title: '排名',
+        title: 'ID',
         dataIndex: 'index',
         key: 'index',
       },
       {
-        title: '搜索关键词',
+        title: '参数',
         dataIndex: 'keyword',
         key: 'keyword',
         render: text => <a href="/">{text}</a>,
       },
       {
-        title: '用户数',
+        title: '当前值',
         dataIndex: 'count',
         key: 'count',
         sorter: (a, b) => a.count - b.count,
         className: styles.alignRight,
       },
       {
-        title: '周涨幅',
+        title: '日变化',
         dataIndex: 'range',
         key: 'range',
         sorter: (a, b) => a.range - b.range,
@@ -225,7 +225,7 @@ export default class Analysis extends Component {
         <Col span={12}>
           <NumberInfo
             title={data.name}
-            subTitle="转化率"
+            subTitle="在线率"
             gap={2}
             total={`${data.cvr * 100}%`}
             theme={currentKey !== data.name && 'light'}
@@ -403,7 +403,7 @@ export default class Analysis extends Component {
             <Card
               loading={loading}
               bordered={false}
-              title="线上热门搜索"
+              title="重点参数"
               extra={iconGroup}
               style={{ marginTop: 24 }}
             >
@@ -412,7 +412,7 @@ export default class Analysis extends Component {
                   <NumberInfo
                     subTitle={
                       <span>
-                        搜索用户数
+                        Pm2.5
                         <Tooltip title="指标文案">
                           <Icon style={{ marginLeft: 8 }} type="info-circle-o" />
                         </Tooltip>
@@ -427,7 +427,7 @@ export default class Analysis extends Component {
                 </Col>
                 <Col sm={12} xs={24} style={{ marginBottom: 24 }}>
                   <NumberInfo
-                    subTitle="人均搜索次数"
+                    subTitle="Pm10"
                     total={2.7}
                     status="down"
                     subTotal={26.2}
@@ -453,26 +453,26 @@ export default class Analysis extends Component {
               loading={loading}
               className={styles.salesCard}
               bordered={false}
-              title="销售额类别占比"
+              title="不同观测参数"
               bodyStyle={{ padding: 24 }}
               extra={
                 <div className={styles.salesCardExtra}>
                   {iconGroup}
                   <div className={styles.salesTypeRadio}>
                     <Radio.Group value={salesType} onChange={this.handleChangeSalesType}>
-                      <Radio.Button value="all">全部渠道</Radio.Button>
-                      <Radio.Button value="online">线上</Radio.Button>
-                      <Radio.Button value="offline">门店</Radio.Button>
+                      <Radio.Button value="all">全部</Radio.Button>
+                      <Radio.Button value="online">空气</Radio.Button>
+                      <Radio.Button value="offline">水质</Radio.Button>
                     </Radio.Group>
                   </div>
                 </div>
               }
               style={{ marginTop: 24, minHeight: 509 }}
             >
-              <h4 style={{ marginTop: 8, marginBottom: 32 }}>销售额</h4>
+              <h4 style={{ marginTop: 8, marginBottom: 32 }}>数据量</h4>
               <Pie
                 hasLegend
-                subTitle="销售额"
+                subTitle="数据量"
                 total={() => <Yuan>{salesPieData.reduce((pre, now) => now.y + pre, 0)}</Yuan>}
                 data={salesPieData}
                 valueFormat={value => <Yuan>{value}</Yuan>}

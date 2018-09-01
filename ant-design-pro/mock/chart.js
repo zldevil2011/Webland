@@ -32,7 +32,7 @@ const searchData = [];
 for (let i = 0; i < 50; i += 1) {
   searchData.push({
     index: i + 1,
-    keyword: `搜索关键词-${i}`,
+    keyword: `空气质量-${i}`,
     count: Math.floor(Math.random() * 1000),
     range: Math.floor(Math.random() * 100),
     status: Math.floor((Math.random() * 10) % 2),
@@ -40,73 +40,73 @@ for (let i = 0; i < 50; i += 1) {
 }
 const salesTypeData = [
   {
-    x: '家用电器',
+    x: 'Pm2.5',
     y: 4544,
   },
   {
-    x: '食用酒水',
+    x: 'Pm10',
     y: 3321,
   },
   {
-    x: '个护健康',
+    x: 'So2',
     y: 3113,
   },
   {
-    x: '服饰箱包',
+    x: 'No2',
     y: 2341,
   },
   {
-    x: '母婴产品',
+    x: 'Co',
     y: 1231,
   },
   {
-    x: '其他',
+    x: 'O3',
     y: 1231,
   },
 ];
 
 const salesTypeDataOnline = [
   {
-    x: '家用电器',
+    x: 'Pm10',
     y: 244,
   },
   {
-    x: '食用酒水',
+    x: 'Pm2.5',
     y: 321,
   },
   {
-    x: '个护健康',
+    x: 'So2',
     y: 311,
   },
   {
-    x: '服饰箱包',
+    x: 'No2',
     y: 41,
   },
   {
-    x: '母婴产品',
+    x: 'Co',
     y: 121,
   },
   {
-    x: '其他',
+    x: 'O3',
     y: 111,
   },
 ];
 
 const salesTypeDataOffline = [
   {
-    x: '家用电器',
+    x: '土壤物理',
     y: 99,
   },
   {
-    x: '个护健康',
+    x: '化学性质',
     y: 188,
   },
   {
-    x: '服饰箱包',
+    x: '自然噪声',
     y: 344,
   },
   {
-    x: '母婴产品',
+    x: '环境噪声',
     y: 255,
   },
   {
@@ -118,7 +118,7 @@ const salesTypeDataOffline = [
 const offlineData = [];
 for (let i = 0; i < 10; i += 1) {
   offlineData.push({
-    name: `门店${i}`,
+    name: `设备${i}`,
     cvr: Math.ceil(Math.random() * 9) / 10,
   });
 }
