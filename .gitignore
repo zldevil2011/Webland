@@ -37,3 +37,7 @@ functions/mock
 # screenshot
 screenshot
 .vscode/
+
+*.pyc
+
+WetlandEnv/
