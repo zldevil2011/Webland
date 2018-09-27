@@ -4,7 +4,7 @@ from django.db import models
 # 用户
 class User(models.Model):
     id = models.AutoField(primary_key=True)
-    username = models.CharField(max_length=30, null=True)
+    username = models.CharField(max_length=30)
     password = models.CharField(max_length=30)
     telephone = models.CharField(max_length=20)
     address = models.CharField(max_length=50)
