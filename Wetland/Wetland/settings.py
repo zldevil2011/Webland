@@ -25,7 +25,11 @@ SECRET_KEY = '4y%@ca33drh57$f(a8xdh3(%z6=*8*f#^&%57y$31=)+cp__ya'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '127.0.0.1:3001',
+    'localhost:3001',
+    "*"
+]
 
 
 # Application definition
@@ -89,7 +93,7 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 

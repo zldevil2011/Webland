@@ -24,6 +24,8 @@ class Device(models.Model):
     latitude = models.FloatField(default=0.0)
     longitude = models.FloatField(default=0.0)
     project_name = models.CharField(max_length=50)
+    project_id = models.IntegerField(default=0)
+    owner_id = models.IntegerField(default=0)
 
 # 项目，默认一个
 class Project(models.Model):

@@ -13,12 +13,14 @@ def register(request):
     else:
         username = request.POST.get('username', None)
         password = request.POST.get('password', None)
+        if username is None or password is None:
+            return HttpResponse({'success': False, 'message': '数据不能为空'})
         user = User()
         user.username = username
         user.password = password
         user.save()
         return HttpResponse({'success': True, 'message': '注册成功'})
-    
+
 @csrf_exempt
 def login(request):
     if request.method == 'GET':
