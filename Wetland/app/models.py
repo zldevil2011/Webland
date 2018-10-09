@@ -44,6 +44,7 @@ class Device(models.Model):
 class AbnormalEventType(models.Model):
     num = models.IntegerField()
     name = models.CharField(max_length=50)
+    value = models.FloatField(default=0.0, null=True)
 
 # 异常事件
 class AbnormalEvent(models.Model):
@@ -52,15 +53,22 @@ class AbnormalEvent(models.Model):
     name = models.CharField(max_length=50)
     device_id = models.ForeignKey(Device, related_name="abnormalEvent", null=True)
     project_id = models.ForeignKey(Project, related_name="abnormalEvent", null=True)
+    create_date = models.DateTimeField(auto_now_add=True, null=True)
     content = models.CharField(max_length=500)
-
 
 # 采集数据
 class Data(models.Model):
-    device_num = models.IntegerField(default=0)
-    create_date = models.DateField(auto_now_add=True)
+    create_date = models.DateField(auto_now_add=True, null=True)
     create_time = models.TimeField(auto_now_add=True)
     content = models.TextField()
     device_id = models.ForeignKey(Device, related_name="data", null=True)
+
+#视频图像
+class videoImage(models.Model):
+    create_date = models.DateField(auto_now_add=True, null=True)
+    create_time = models.TimeField(auto_now_add=True)
+    img_src = models.TextField()
+    device_num = models.CharField(max_length=500)
+
 
 # Create your models here.

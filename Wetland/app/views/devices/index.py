@@ -1,11 +1,11 @@
 # coding:utf8
-from django.http import HttpResponse
-from app.models import Device, Data
-import urllib2
 import cookielib
-from django.views.decorators.csrf import csrf_exempt
 import json
+import urllib2
 from datetime import *
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from app.models import AbnormalEvent, Data, Device, DeviceType, Project
 
 
 @csrf_exempt
@@ -29,7 +29,6 @@ def device_list(request):
     response = HttpResponse(json.dumps(res), content_type="application/json")
     response["Access-Control-Allow-Origin"] = "*"
     return response
-
 
 def device_data(request, device_id):
   """
@@ -86,7 +85,6 @@ def device_data(request, device_id):
   response = HttpResponse(json.dumps(res), content_type="application/json")
   return response
 
-
 def all_device_data(request):
   """
   获取数据
@@ -138,6 +136,66 @@ def all_device_data(request):
   res = {
     'success': True,
     'data': res_data
+  }
+  response = HttpResponse(json.dumps(res), content_type="application/json")
+  return response
+
+def device_register(request):
+  success = False
+  message = ''
+  try:
+    name = request.POST.get('name', None)
+    device_type = request.POST.get('device_type', None)
+    address =  request.POST.get('address', None)
+    install_date =  request.POST.get('install_date', None)
+    install_time =  request.POST.get('install_time', None)
+    latitude =  request.POST.get('latitude', None)
+    longitude =  request.POST.get('longitude', None)
+    project_id =  request.POST.get('project_id', None)
+    owner_id =  request.POST.get('owner_id', None)
+
+    device_type_obj = DeviceType.objects.get(id=int(device_type))
+    project_id_obj = Project.objects.get(id=int(project_id))
+    owner_id_obj = User.objects.get(id=int(owner_id))
+    device = Device(
+      name = name,
+      device_type = device_type_obj,
+      address = address,
+      install_date = install_date,
+      install_time = install_time,
+      latitude = latitude,
+      longitude = longitude,
+      project_id = project_id_obj,
+      owner_id = owner_id_obj
+    )
+    device.save()
+    success = True
+  except e:
+    message = str(e)
+    print(str(e))
+  res = {
+    'success': success,
+    'message': message
+  }
+  response = HttpResponse(json.dumps(res), content_type="application/json")
+  return response
+
+def abnormal_event_list(request):
+  success = False
+  message = ''
+  device_id = request.POST.get('device_id', 'all')
+  data_list = []
+  if device_id == 'all':
+    data_list = AbnormalEvent.objects.all().order_by('create_date')
+  else:
+    try:
+      data_list = AbnormalEvent.objects.filter(device_id__id = int(device_id)).order_by('create_date')
+    except e:
+      message = str(e)
+  res = {
+    'success': success,
+    'message': message,
+    'data': data_list
   }
   response = HttpResponse(json.dumps(res), content_type="application/json")
   return response

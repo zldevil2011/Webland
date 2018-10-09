@@ -39,3 +39,30 @@ def login(request):
             'message': res_message
         }
         return HttpResponse(res_msg)
+
+def update_personal_info(request):
+    if request.method == 'GET':
+        return HttpResponse('Update Personal Info')
+    else:
+        uid = request.POST.get('id', None)
+        username = request.POST.get('username', None)
+        password = request.POST.get('password', None)
+        telephone = request.POST.get('telephone', None)
+        res_message = 'Update Failed'
+        success = False
+        try:
+            user = User.objects.get(id = uid)
+            user.username = username
+            user.password = user.password
+            user.telephone = telephone
+            user.save()
+            res_message = 'Update Success'
+            success = True
+        except Exception as e:
+            print str(e)
+        res_msg = {
+            'success': success,
+            'message': res_message
+        }
+        response = HttpResponse(json.dumps(res_msg), content_type="application/json")
+        return response
