@@ -54,6 +54,7 @@ class AbnormalEvent(models.Model):
     device_id = models.ForeignKey(Device, related_name="abnormalEvent", null=True)
     project_id = models.ForeignKey(Project, related_name="abnormalEvent", null=True)
     create_date = models.DateTimeField(auto_now_add=True, null=True)
+    create_time = models.TimeField(auto_now_add=True, null=True)
     content = models.CharField(max_length=500)
 
 # 采集数据
@@ -70,5 +71,58 @@ class videoImage(models.Model):
     img_src = models.TextField()
     device_num = models.CharField(max_length=500)
 
+#气象站数据
+class meteorologyData(models.Model):
+    windySpeed = models.FloatField(null=True) # 风速
+    windyDirection = models.IntegerField(null=True) #风向
+    temperature = models.FloatField(null=True) # 摄氏度
+    humidity = models.FloatField(null=True) #湿度(0-100)
+    noise = models.FloatField(null=True) #噪声(0-150db)
+    pressure = models.FloatField(null=True) #气压 (kpa)
+    light = models.FloatField(null=True) #光照
+    rainy = models.FloatField(null=True) #雨量 (mm)
+    create_date = models.DateField(auto_now_add=True, null=True)
+    create_time = models.TimeField(auto_now_add=True, null=True)
+
+#空气质量监测数据
+class airData(models.Model):
+    windySpeed = models.FloatField(null=True) # 风速
+    windyDirection = models.IntegerField(null=True) #风向
+    pm25 = models.FloatField(null=True) # Pm2.5
+    pm10 = models.FloatField(null=True) # pm10
+    o3 = models.FloatField(null=True) # O3
+    co = models.FloatField(null=True) # Co
+    so2 = models.FloatField(null=True) # SO2
+    no2 = models.FloatField(null=True) # NO2
+    temperature = models.FloatField(null=True) # 摄氏度
+    humidity = models.FloatField(null=True) #湿度(0-100)
+    create_date = models.DateField(auto_now_add=True, null=True)
+    create_time = models.TimeField(auto_now_add=True, null=True)
+
+
+#水文水质数据
+class waterData(models.Model):
+    waterLevel = models.FloatField(null=True) # 水位
+    o3 = models.FloatField(null=True) # 溶解氧
+    temperature = models.FloatField(null=True) # 摄氏度
+    elec = models.FloatField(null=True) # 氧化还原电位
+    conductivity = models.FloatField(null=True) # 电导率
+    ph = models.FloatField(null=True) # Ph值
+    transparency = models.FloatField(null=True) # 透明度
+    waterSpeed = models.FloatField(null=True) # 流速
+    nh4 = models.FloatField(null=True) # NH4
+    create_date = models.DateField(auto_now_add=True, null=True)
+    create_time = models.TimeField(auto_now_add=True, null=True)
+
+
+#土壤数据
+class soilData(models.Model):
+    temperature = models.FloatField(null=True) # 摄氏度
+    humidity = models.FloatField(null=True) #湿度(0-100)
+    conductivity = models.FloatField(null=True) # 电导率
+    ph = models.FloatField(null=True) # Ph值
+    create_date = models.DateField(auto_now_add=True, null=True)
+    create_time = models.TimeField(auto_now_add=True, null=True)
+    
 
 # Create your models here.

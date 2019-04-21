@@ -3,6 +3,7 @@ import cookielib
 import json
 import urllib2
 from datetime import *
+import time
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from app.models import AbnormalEvent, Data, Device, DeviceType, Project
@@ -199,3 +200,82 @@ def abnormal_event_list(request):
   }
   response = HttpResponse(json.dumps(res), content_type="application/json")
   return response
+
+@csrf_exempt
+def total_data_sum(request):
+  """
+  获取当前数据量的汇总，包括：今日数据量、昨日数据量、日增加百分比
+  """
+  # 获取当日数据
+  today_date = time.strftime('%Y-%m-%d',time.localtime(time.time()))
+  yesterday_date = (date.today() + timedelta(days = -1)).strftime("%Y-%m-%d")
+  todayDataList = Data.objects.filter(create_date = today_date)
+  yesterdayDataList = Data.objects.filter(create_date = yesterday_date)
+
+  today_data_num = len(todayDataList)
+  yesterday_data_num = len(yesterdayDataList)
+  if yesterday_data_num > 0:
+    day_growth_rate = (today_data_num - yesterday_data_num) / yesterday_data_num
+  else:
+    day_growth_rate = 0
+
+  res_dict = {
+    'success': True,
+    'data': {
+      'todayDataNum': today_data_num,
+      'yesterdayDataNum': yesterday_data_num,
+      'dayGrowthRate': day_growth_rate,
+    }
+  }
+
+  response = HttpResponse(json.dumps(res_dict), content_type="application/json")
+  response["Access-Control-Allow-Origin"] = "*"
+  return response
+  
+@csrf_exempt
+def total_abnormal_sum(request):
+  """
+  获取异常报警的汇总，包括今日总数，过去两周的日数量
+  """      
+  data_list = AbnormalEvent.objects.all().order_by('create_date')
+  today_date = time.strftime('%Y-%m-%d',time.localtime(time.time()))
+
+  todayDataList = AbnormalEvent.objects.filter(create_date = today_date)
+
+  res = {
+    'success': True,
+    'data': {
+      'todayDataNum': len(todayDataList),
+      'historyList': [],
+    }
+  }
+
+  print(res)
+  print(res['data'])
+  for i in range (30, 0, -1):
+    pre_day_date = (date.today() + timedelta(days = (-1 * int(i)))).strftime("%Y-%m-%d")
+    pre_day_data_list = AbnormalEvent.objects.filter(create_date = pre_day_date)
+    res['data']['historyList'].append({
+      'date': pre_day_date,
+      'count': len(pre_day_data_list)
+    })
+
+  response = HttpResponse(json.dumps(res), content_type="application/json")
+  response["Access-Control-Allow-Origin"] = "*"
+  return response
+
+@csrf_exempt
+def total_device_sum(request):
+    """
+    设备整体数据统计，包括设备数量
+    """
+    device_list = Device.objects.all()
+    res = {
+      'success': True,
+      'data': {
+        'deviceLength': len(device_list)
+      }
+    }
+    response = HttpResponse(json.dumps(res), content_type="application/json")
+    response["Access-Control-Allow-Origin"] = "*"
+    return response

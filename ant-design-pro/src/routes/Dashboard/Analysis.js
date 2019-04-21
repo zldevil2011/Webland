@@ -1,5 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
+import request from '../../utils/request';
+
 import {
   Row,
   Col,
@@ -57,6 +59,16 @@ export default class Analysis extends Component {
     salesType: 'all',
     currentTabKey: '',
     rangePickerValue: getTimeDistance('year'),
+    totalDataSum: {
+      todayDataNum: 0,
+      dayGrowthRate: 0,
+      yesterdayDataNum: 0,
+    },
+    totalAbnormalSum: {
+      todayDataNum: 0,
+      historyList: [],
+    },
+    deviceLength: 0,
   };
 
   componentDidMount() {
@@ -64,13 +76,46 @@ export default class Analysis extends Component {
     dispatch({
       type: 'chart/fetch',
     });
-  }
 
+    this.fetchData();
+  }
+  
   componentWillUnmount() {
     const { dispatch } = this.props;
     dispatch({
       type: 'chart/clear',
     });
+  }
+
+  fetchData = async () => {
+    // 获取数据总览的数据
+    const total_abnormal_sum = await request('http://127.0.0.1:8080/api/v1/total_abnormal_sum/', {
+      method: 'GET',
+    });
+    console.log('total_abnormal_sum: ', total_abnormal_sum);
+    const { data = {} } = total_abnormal_sum;
+    this.setState({
+      totalAbnormalSum: data,
+    });
+
+    const total_data_sum = await request('http://127.0.0.1:8080/api/v1/total_data_sum/', {
+      method: 'GET',
+    });
+    console.log('total_data_sum: ', total_data_sum);
+    const { data: totalDataSum = {} } = total_data_sum;
+    this.setState({
+      totalDataSum,
+    });
+
+    const total_device_sum = await request('http://127.0.0.1:8080/api/v1/total_device_sum/', {
+      method: 'GET',
+    });
+    console.log('total_device_sum: ', total_device_sum);
+    const { data: { deviceLength = 0 } } = total_device_sum;
+
+    this.setState({
+      deviceLength,
+    })
   }
 
   handleChangeSalesType = e => {
@@ -122,7 +167,7 @@ export default class Analysis extends Component {
   }
 
   render() {
-    const { rangePickerValue, salesType, currentTabKey } = this.state;
+    const { rangePickerValue, salesType, currentTabKey, totalDataSum, totalAbnormalSum, deviceLength } = this.state;
     const { chart, loading } = this.props;
     const {
       visitData,
@@ -135,7 +180,17 @@ export default class Analysis extends Component {
       salesTypeDataOnline,
       salesTypeDataOffline,
     } = chart;
-
+    // console.log('visitData: ', visitData);
+    const totalAbnormaEventList = [];
+    const { historyList = {} } = totalAbnormalSum;
+    historyList.forEach((h) => {
+      const obj = {
+        x: h.date,
+        y: h.count,
+      };
+      totalAbnormaEventList.push(obj);
+    });
+    console.log('totalAbnormaEventList: ', totalAbnormaEventList);
     const salesPieData =
       salesType === 'all'
         ? salesTypeData
@@ -160,7 +215,7 @@ export default class Analysis extends Component {
 
     const salesExtra = (
       <div className={styles.salesExtraWrap}>
-        <div className={styles.salesExtra}>
+        {/* <div className={styles.salesExtra}>
           <a className={this.isActive('today')} onClick={() => this.selectDate('today')}>
             今日
           </a>
@@ -173,7 +228,7 @@ export default class Analysis extends Component {
           <a className={this.isActive('year')} onClick={() => this.selectDate('year')}>
             全年
           </a>
-        </div>
+        </div> */}
         <RangePicker
           value={rangePickerValue}
           onChange={this.handleRangePickerChange}
@@ -247,10 +302,10 @@ export default class Analysis extends Component {
 
     const topColResponsiveProps = {
       xs: 24,
-      sm: 12,
-      md: 12,
-      lg: 12,
-      xl: 6,
+      sm: 8,
+      md: 8,
+      lg: 8,
+      xl: 8,
       style: { marginBottom: 24 },
     };
 
@@ -267,21 +322,20 @@ export default class Analysis extends Component {
                   <Icon type="info-circle-o" />
                 </Tooltip>
               }
-              total={() => <Yuan>126560</Yuan>}
-              footer={<Field label="日均数据" value={`￥${numeral(12423).format('0,0')}`} />}
+              total={() => <Yuan>{totalDataSum.todayDataNum}</Yuan>}
               contentHeight={46}
             >
-              <Trend flag="up" style={{ marginRight: 16 }}>
-                周同比
-                <span className={styles.trendText}>12%</span>
+              <Trend>
+              昨日数据量
+                <span className={styles.trendText}>{totalDataSum.yesterdayDataNum * 100}%</span>
               </Trend>
-              <Trend flag="down">
+              <Trend>
                 日环比
-                <span className={styles.trendText}>11%</span>
+                <span className={styles.trendText}>{totalDataSum.dayGrowthRate * 100}%</span>
               </Trend>
             </ChartCard>
           </Col>
-          <Col {...topColResponsiveProps}>
+          {/* <Col {...topColResponsiveProps}>
             <ChartCard
               bordered={false}
               title="访问量"
@@ -297,7 +351,7 @@ export default class Analysis extends Component {
             >
               <MiniArea color="#975FE4" data={visitData} />
             </ChartCard>
-          </Col>
+          </Col> */}
           <Col {...topColResponsiveProps}>
             <ChartCard
               bordered={false}
@@ -308,11 +362,10 @@ export default class Analysis extends Component {
                   <Icon type="info-circle-o" />
                 </Tooltip>
               }
-              total={numeral(6560).format('0,0')}
-              footer={<Field label="正确率" value="60%" />}
+              total={totalAbnormalSum.todayDataNum}
               contentHeight={46}
             >
-              <MiniBar data={visitData} />
+              <MiniBar data={totalAbnormaEventList} />
             </ChartCard>
           </Col>
           <Col {...topColResponsiveProps}>
@@ -325,22 +378,10 @@ export default class Analysis extends Component {
                   <Icon type="info-circle-o" />
                 </Tooltip>
               }
-              total="78%"
-              footer={
-                <div style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>
-                  <Trend flag="up" style={{ marginRight: 16 }}>
-                    周同比
-                    <span className={styles.trendText}>12%</span>
-                  </Trend>
-                  <Trend flag="down">
-                    日环比
-                    <span className={styles.trendText}>11%</span>
-                  </Trend>
-                </div>
-              }
+              total="100%"
               contentHeight={46}
             >
-              <MiniProgress percent={78} strokeWidth={8} target={80} color="#13C2C2" />
+              <MiniProgress percent={100} strokeWidth={8} target={100} color="#13C2C2" />
             </ChartCard>
           </Col>
         </Row>
@@ -371,16 +412,16 @@ export default class Analysis extends Component {
                   </Col>
                 </Row>
               </TabPane>
-              <TabPane tab="访问量" key="views">
+              <TabPane tab="异常情况数据" key="views">
                 <Row>
                   <Col xl={16} lg={12} md={12} sm={24} xs={24}>
                     <div className={styles.salesBar}>
-                      <Bar height={292} title="访问量趋势" data={salesData} />
+                      <Bar height={292} title="异常情况趋势" data={salesData} />
                     </div>
                   </Col>
                   <Col xl={8} lg={12} md={12} sm={24} xs={24}>
                     <div className={styles.salesRank}>
-                      <h4 className={styles.rankingTitle}>访问量排名</h4>
+                      <h4 className={styles.rankingTitle}>异常情况排名</h4>
                       <ul className={styles.rankingList}>
                         {rankingListData.map((item, i) => (
                           <li key={item.title}>
